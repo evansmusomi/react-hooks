@@ -2,6 +2,8 @@
 // http://localhost:3000/isolated/exercise/06.js
 
 import React from 'react'
+import {ErrorBoundary} from 'react-error-boundary'
+import {ErrorFallback} from './ErrorBoundary'
 import {
   PokemonForm,
   fetchPokemon,
@@ -33,12 +35,7 @@ function PokemonInfo({pokemonName}) {
   if (status === 'idle') {
     return 'Submit a pokemon'
   } else if (status === 'rejected') {
-    return (
-      <div role="alert">
-        There was an error:{' '}
-        <pre style={{whiteSpace: 'normal'}}>{error.message}</pre>
-      </div>
-    )
+    throw error
   } else if (status === 'pending') {
     return <PokemonInfoFallback name={pokemonName} />
   } else if (status === 'resolved') {
@@ -60,7 +57,9 @@ function App() {
       <PokemonForm pokemonName={pokemonName} onSubmit={handleSubmit} />
       <hr />
       <div className="pokemon-info">
-        <PokemonInfo pokemonName={pokemonName} />
+        <ErrorBoundary FallbackComponent={ErrorFallback} key={pokemonName}>
+          <PokemonInfo pokemonName={pokemonName} />
+        </ErrorBoundary>
       </div>
     </div>
   )
