@@ -10,21 +10,22 @@ import {
 } from '../pokemon'
 
 function PokemonInfo({pokemonName}) {
-  const [status, setStatus] = React.useState('idle')
-  const [pokemon, setPokemon] = React.useState(null)
-  const [error, setError] = React.useState(null)
+  const [state, setState] = React.useState({
+    status: 'idle',
+    pokemon: null,
+    error: null,
+  })
+  const {status, pokemon, error} = state
 
   React.useEffect(() => {
     if (!pokemonName) return
-    setStatus('pending')
+    setState({status: 'pending'})
     fetchPokemon(pokemonName).then(
       pokemon => {
-        setPokemon(pokemon)
-        setStatus('resolved')
+        setState({status: 'resolved', pokemon})
       },
       error => {
-        setError(error)
-        setStatus('rejected')
+        setState({status: 'rejected', error})
       },
     )
   }, [pokemonName])
@@ -43,6 +44,8 @@ function PokemonInfo({pokemonName}) {
   } else if (status === 'resolved') {
     return <PokemonDataView pokemon={pokemon} />
   }
+
+  throw new Error('This should be impossible')
 }
 
 function App() {
